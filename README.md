@@ -1,7 +1,6 @@
 # Brawlhalla Stat Editor
 
-Offline / training-room only. Never play online with modified game files.
+Offline / training-room use only.
 
-1. Put `Brawlhalla-StatEditor.ps1` and `Run.bat` in the same folder.
-2. Double-click `Run.bat` (it asks for administrator rights because the Steam folder needs it).
-3. Updates: press **Check for updates** inside the tool.
+1. Download `BrawlhallaStatEditor.exe` and double-click it.
+2. Updates: press "Check for updates" inside the app.
