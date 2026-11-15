@@ -11,7 +11,7 @@ $ErrorActionPreference = 'Stop'
 
 # ---------- self update (GitHub) ----------
 # Bump $ScriptVersion on every release. The published version.json (same folder as this file on GitHub) holds the newest number, its notes and the SHA256 of the script.
-$ScriptVersion = 1
+$ScriptVersion = 2
 $UpdateBase = 'https://raw.githubusercontent.com/kalafglk-droid/brawlhalla-stat-editor/main'
 
 # ---------- self-elevate (the Steam folder usually needs admin to write) ----------
@@ -1115,7 +1115,7 @@ function Update-InstantUI {
     $btnInstant.Text = if ($isInst) { "INSTANT HIT: ON`n(click to turn off)" } else { "INSTANT HIT: OFF`n(click to turn on for this hero)" }
     $bars['Dexterity'].Enabled = -not $isInst
     $nums['Dexterity'].Enabled = -not $isInst
-    $dexNum.Enabled = -not $anyInst
+    $dexNum.Enabled = $true   # stays editable so the INSTANT multiplier can be tuned
 }
 
 function Stage-FromControls {

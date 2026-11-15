@@ -1,5 +1,5 @@
 {
-  "version": 1,
-  "sha256": "510377772376CA971E9AF79729EEE9AF6A027D879126CED1A6DC7EE8C9ACF402",
-  "notes": "First version."
+  "version": 2,
+  "sha256": "0B6F9A64D331DEA9EFFB1251BED88E59E45958754CC9021F2CE3951EDC2BE02B",
+  "notes": "Dexterity multiplier stays editable while INSTANT is on (for testing Couch Party)."
 }
