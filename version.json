@@ -1,5 +1,5 @@
 {
-  "version": 2,
-  "sha256": "0B6F9A64D331DEA9EFFB1251BED88E59E45958754CC9021F2CE3951EDC2BE02B",
-  "notes": "Dexterity multiplier stays editable while INSTANT is on (for testing Couch Party)."
+  "version": 3,
+  "sha256": "5E61B17A8D1CFC7BCA4F1D89DB60988AAFA5DEBA7C8D0AFEB17A1ACBEA8CDA24",
+  "notes": "INSTANT HIT uses Dexterity 10 instead of 11."
 }

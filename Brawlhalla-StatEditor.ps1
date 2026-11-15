@@ -11,7 +11,7 @@ $ErrorActionPreference = 'Stop'
 
 # ---------- self update (GitHub) ----------
 # Bump $ScriptVersion on every release. The published version.json (same folder as this file on GitHub) holds the newest number, its notes and the SHA256 of the script.
-$ScriptVersion = 2
+$ScriptVersion = 3
 $UpdateBase = 'https://raw.githubusercontent.com/kalafglk-droid/brawlhalla-stat-editor/main'
 
 # ---------- self-elevate (the Steam folder usually needs admin to write) ----------
@@ -565,6 +565,7 @@ Add-Type -TypeDefinition $cs -Language CSharp
 $KnownKey = [uint32]154281100
 $enc = New-Object System.Text.UTF8Encoding($false)
 $NormalMax = 11     # what the unpatched game allows
+$InstantLevel = 10  # Dexterity level used by INSTANT HIT (11 made the hero vanish in Couch Party)
 $NormalTotal = 22   # the unpatched game requires the 4 stats of a hero to add up to this
 $ExtMax = 100       # highest level in extended mode (must be 12..127)
 $inv = [System.Globalization.CultureInfo]::InvariantCulture
@@ -796,8 +797,8 @@ function Build-StatText {
 # INSTANT HIT without the game patch: only the existing Dexterity level-11 row is boosted (no extra levels, no code patch).
 # Every hero that has Dexterity 11 is affected, so INSTANT HIT gives its hero Dexterity 11 and the other stats are scaled to keep the total at 22.
 function Build-StatTextLevel11($val) {
-    $m = [regex]::Match($statOrig, '<StatType StatName="Dexterity11">(.*?)</StatType>', 'Singleline')
-    if (-not $m.Success) { throw 'Stat row Dexterity11 not found.' }
+    $m = [regex]::Match($statOrig, ('<StatType StatName="Dexterity' + $InstantLevel + '">(.*?)</StatType>'), 'Singleline')
+    if (-not $m.Success) { throw "Stat row Dexterity$InstantLevel not found." }
     $block = $m.Value
     $vs = ([double]$val).ToString('0.####', $inv)
     foreach ($k in 'RecoverMod', 'AirRecoverMod', 'SigRecoverMod', 'MinChargeMod') {
@@ -892,9 +893,9 @@ function Write-Game {
             foreach ($h in $Heroes) {
                 if ($InstantHeroes.ContainsKey($h.Name)) { continue }
                 $hv = if ($Staged.ContainsKey($h.Name)) { $Staged[$h.Name] } else { $h.Orig }
-                if ([int]$hv['Dexterity'] -eq $NormalMax) { $shared += $h.Display }
+                if ([int]$hv['Dexterity'] -eq $InstantLevel) { $shared += $h.Display }
             }
-            if ($shared.Count -gt 0) { $script:lastNote = " Also faster (they have Dexterity 11 too): $($shared -join ', ')." }
+            if ($shared.Count -gt 0) { $script:lastNote = " Also faster (they have the same Dexterity level too): $($shared -join ', ')." }
         }
         $newBytes = [Swz]::Write($list, $key, $swz.Seed)
         $chk = [Swz]::Read($newBytes, $key)
@@ -1025,7 +1026,7 @@ $btnInstant.Text = 'INSTANT HIT: OFF'
 $form.Controls.Add($btnInstant)
 $btnUpdate = New-Btn 'Check for updates' 12 642 240
 $tips.SetToolTip($btnUpdate, 'Looks for a newer version of this tool on GitHub. It shows what changed and asks before replacing anything; the old file is kept next to it as .old')
-$tips.SetToolTip($btnInstant, 'ON: this hero gets Dexterity 11 (the game maximum; its other stats are scaled to keep the total at 22) and the Dexterity multiplier goes to its maximum (locked). Needs no game patch. Any other hero that also has Dexterity 11 gets faster too. OFF: everything goes back.')
+$tips.SetToolTip($btnInstant, 'ON: this hero gets Dexterity 10 (its other stats are scaled to keep the total at 22) and the Dexterity multiplier goes to its maximum (locked). Needs no game patch. Any other hero that also has Dexterity 10 gets faster too. OFF: everything goes back.')
 
 $script:loading = $false
 function Current-Hero { if ($list.SelectedIndex -ge 0) { return $Heroes[$list.SelectedIndex] } return $null }
@@ -1074,8 +1075,8 @@ function Set-InstantOn($h) {
     $InstantBackup[$h.Name] = if ($Staged.ContainsKey($h.Name)) { $Staged[$h.Name].Clone() } else { $null }
     # legal stats only (max 11 each, total 22): Dexterity 11 and the other three scaled to share the remaining 11
     $v = $base.Clone()
-    $v['Dexterity'] = $NormalMax
-    $rest = $NormalTotal - $NormalMax
+    $v['Dexterity'] = $InstantLevel
+    $rest = $NormalTotal - $InstantLevel
     $keys = @('Strength', 'Weight', 'Speed')
     $sum = 0
     foreach ($k in $keys) { $sum += [int]$base[$k] }
