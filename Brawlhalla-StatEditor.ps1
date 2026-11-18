@@ -11,8 +11,8 @@ $ErrorActionPreference = 'Stop'
 
 # ---------- self update (GitHub) ----------
 # Bump $ScriptVersion on every release. The published version.json (same folder as this file on GitHub) holds the newest number, its notes and the SHA256 of the script.
-$ScriptVersion = 3
-$UpdateBase = 'https://raw.githubusercontent.com/kalafglk-droid/brawlhalla-stat-editor/main'
+$ScriptVersion = 3  # dev build: per-hero instant test
+$UpdateBase = 'https://raw.githubusercontent.com/kalafglk-droid/brawlhalla-stat-editor/dev'
 
 # ---------- self-elevate (the Steam folder usually needs admin to write) ----------
 $principal = New-Object Security.Principal.WindowsPrincipal([Security.Principal.WindowsIdentity]::GetCurrent())
@@ -884,7 +884,7 @@ function Write-Game {
             $list[$statIdx] = $enc.GetBytes($newStat)
         } elseif ($InstantHeroes.Count -gt 0) {
             if ($statIdx -lt 0) { throw 'The stat table (StatTypes) was not found in Game.swz.' }
-            $newStat = Build-StatTextLevel11 ([double]$dexNum.Value)
+            $newStat = Build-StatTextLevel11 0.001   # DEV: marker value, read by the patched BrawlhallaAir.swf
             $list[$statIdx] = $enc.GetBytes($newStat)
         }
         $script:lastNote = ''
